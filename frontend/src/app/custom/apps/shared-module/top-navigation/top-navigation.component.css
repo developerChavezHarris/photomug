@@ -1,0 +1,23 @@
+a {
+    cursor: pointer;
+}
+
+.top-nav-btn {
+    border-radius: 0%;
+    background-color: #00ACFF;
+    color: whitesmoke;
+    letter-spacing: 0.1rem;
+    font-size: 0.8rem;
+}
+
+
+/* Login button and Register button*/
+.login-btn, .register-btn {
+    background-color: #7C67FF;
+    cursor: pointer;
+    color: whitesmoke;
+    border: 0;
+    border-radius: 0;
+    letter-spacing: 0.1rem;
+    font-size: 0.8rem;
+}

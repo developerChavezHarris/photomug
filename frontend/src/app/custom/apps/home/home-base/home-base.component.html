@@ -1,0 +1,126 @@
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+
+    <h2 class="mb-2">Browse and Explore free stock photos</h2>
+    <p class="lead">Use our "Ultimate Image Search Engine" to browse and explore thousands of related stock images.</p>
+
+    <form [formGroup]="imageSearchForm" (ngSubmit)="onSubmit()" class="mb-2">
+
+      <div class="input-group">
+        <div class="custom-file">
+
+          <input (change)="onFileSelected($event)" type="file" class="custom-file-input" id="file-input">
+          <!-- Check if file is uploaded -->
+          <div *ngIf="imageAttachCheck; else noImageAttach">
+            <label class="custom-file-label" for="file-input">
+              <fa-icon class="fa-image text-success" [icon]="faImage"></fa-icon> {{ imageAttachName }}
+            </label>
+          </div>
+
+          <ng-template #noImageAttach>
+            <label class="custom-file-label" for="file-input">
+              <fa-icon class="fa-image text-muted" [icon]="faImage"></fa-icon>
+            </label>
+          </ng-template>
+
+        </div>
+        <div class="input-group-append">
+          <button class="btn btn-dark" type="submit">
+            <fa-icon class="fa-search" [icon]="faSearch"></fa-icon> Search...
+          </button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div class="container">
+
+  <div *ngIf="loading else loaded">
+    <div class="loadingio-spinner-spinner-3b2t26g3nc">
+      <div class="ldio-a8xnxhe9yic">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #loaded>
+
+
+    <div *ngIf="resultsFromImageQuery; else noResultsFromImageQuery">
+
+
+      <div class="text-muted m-2"><span class="badge badge-dark">Your photo: {{ imageAttachName }}</span></div>
+
+
+      <img [src]="previewImagePath" alt="">
+
+
+      <div class="text-muted m-2 mt-4"><span class="badge badge-dark">Search results: </span></div>
+
+
+
+      <div class="d-flex align-content-between flex-wrap">
+
+
+        <div *ngFor="let result of queryResults" class="p-1">
+
+          <div class="card shadow-sm bg-dark border-0">
+            <img [src]="result.filePath" alt="">
+            <div class="card-footer">
+              <a class="btn btn-outline-light rounded-0 ml-2 photo-btn" href="{{result.filePath}}"
+                target="_blank">Download</a>
+            </div>
+            <!-- <p><span class="badge badge-light p-2 mt-2 text-muted">{{ result.score }}</span></p> -->
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+
+    </div>
+    <ng-template #noResultsFromImageQuery>
+
+
+      <div class="d-flex align-content-between flex-wrap">
+
+        <div *ngFor="let image of homePageImages" class="p-1">
+          <div class="card shadow-sm bg-dark border-0">
+            <img [src]="image.filePath" alt="">
+            <div class="card-footer"><button class="btn btn-outline-light rounded-0 photo-btn"
+                (click)="likePhoto(image.fileID, $event.currentTarget)">
+                <fa-icon class="fa-image mr-1" [icon]="faHeart"></fa-icon><span id="likes" #likes>{{ image.likes }}</span>
+              </button>
+              <a class="btn btn-outline-light rounded-0 ml-2 photo-btn" href="{{image.filePath}}"
+                target="_blank">Download</a></div>
+          </div>
+
+        </div>
+
+
+
+      </div>
+
+    </ng-template>
+  </ng-template>
+
+
+
+
+</div>

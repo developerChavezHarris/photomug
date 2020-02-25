@@ -1,0 +1,230 @@
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+
+    <h2 class="mb-2">Upload your stock photo collection</h2>
+    <p class="lead">Join the hundreds of photograhers who uploaded stock photos and made PhotoMug a better place.</p>
+
+
+  </div>
+</div>
+
+<!-- Albums -->
+
+<div class="container">
+
+  <div *ngIf="deleteIndivPhotoResponse" class="alert alert-dismissible fade show fixed-top bg-dark text-white rounded-0"
+    role="alert">
+    <strong>You deleted a photo</strong> {{ deleteIndivPhotoResponse.photo_deleted }}
+    <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="createAlbumResponse">
+    <div class="alert alert-dismissible fade show bg-dark rounded-0 text-white" role="alert">
+      <strong>Album Created</strong> {{ createAlbumResponse.album_name }}
+      <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="photoUploadResponse">
+    <div class="alert alert-dismissible fade show bg-dark rounded-0 text-white" role="alert">
+      <strong>Photos Uploaded</strong> Upload successful
+      <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="deletePhotoAlbumResponse">
+    <div class="alert alert-dismissible fade show bg-dark rounded-0 text-white" role="alert">
+      <strong>Album Deleted</strong> {{ deletePhotoAlbumResponse.album_name }}
+      <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </ng-container>
+
+  <nav class="mb-4">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-tab nav-link bg-light rounded-0 active" id="nav-create-album-tab" data-toggle="tab"
+        href="#create-album" role="tab" aria-controls="create-album" aria-selected="true">CREATE ALBUMS</a>
+      <a class="nav-item nav-tab nav-link bg-light rounded-0" id="nav-public-album-tab" data-toggle="tab"
+        href="#public-album" role="tab" aria-controls="public-album" aria-selected="false">PUBLIC ALBUMS</a>
+      <a class="nav-item nav-tab nav-link bg-light rounded-0" id="nav-upload-photos-tab" data-toggle="tab"
+        href="#upload-photo" role="tab" aria-controls="upload-photo" aria-selected="false">UPLOAD PHOTOS</a>
+    </div>
+  </nav>
+
+  <div class="tab-content" id="nav-tabContent">
+
+    <div class="tab-pane fade show active mb-4" id="create-album" role="tabpanel" aria-labelledby="create-album-tab">
+
+
+      <form (ngSubmit)="createAlbum($event)" [formGroup]="createAlbumForm">
+        <div class="form-group">
+          <label for="album_name">Album name</label>
+          <input name="album_name" type="text" class="form-control" id="album_name" placeholder="e.g. birthday" />
+        </div>
+        <div class="form-group">
+          <label for="album_visibility">Visibility</label>
+          <select name="album_visibility" class="form-control" id="album_visibility">
+            <option value="public" selected>Public</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="album_description">Whats the ablum about ?</label>
+          <textarea name="album_description" class="form-control" id="album_description" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <button class="btn save-ablum-btn" type="submit">Save Album</button>
+        </div>
+      </form>
+
+    </div>
+
+    <div class="tab-pane fade mb-4" id="public-album" role="tabpanel" aria-labelledby="nav-public-album-tab">
+
+      <ul class="list-group">
+
+        <ng-container *ngIf="albums; else noAlbums">
+
+          <li *ngFor="let album of albums" class="card mb-2 p-2">
+            <div class="text-center">
+              <span class="lead">{{ album.album_name }}</span> <br>
+              <span class="text-muted">{{ album.album_description }}</span>
+            </div>
+
+            <div class="text-right">
+              <!-- <button class="btn album-btn mr-2" data-toggle="modal" data-target="#viewAlbumModal">View</button>  -->
+              <a class="btn album-btn mr-2" data-toggle="modal" href="#viewAlbumModal"
+                (click)="getPhotosInAlbum(album.id)">View</a>
+              <button class="btn album-btn mr-2" (click)="deletePhotoAlbum(album.id)">Delete</button>
+            </div>
+
+            <!-- View album modals -->
+
+            <div class="modal fade" id="viewAlbumModal" tabindex="-1" role="dialog"
+              aria-labelledby="viewAlbumModalTitle" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="viewAlbumModalTitle">Album</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- Photos in this album -->
+
+                    <ng-container *ngIf="photos_exist_in_album; else no_photos_in_album">
+
+                      <div class="row">
+
+
+                        <div *ngFor="let photo of photos_in_album" class="p-2 card border-0 rounded-0">
+                          <img [src]="photo.filePath" alt="">
+                          <div class="card-footer text-center">
+                            <button class="btn file-delete-btn mr-2"
+                              (click)="deleteIndivPhoto(photo.fileID)">Delete</button>
+                            <a class="btn photo-btn rounded-0" href="{{photo.filePath}}" target="_blank">View</a>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+
+                    </ng-container>
+                    <ng-template #no_photos_in_album>
+                      <p class="text-muted">This album seems empty.</p>
+
+                    </ng-template>
+
+
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn close-album-view-btn" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- End view album modal -->
+
+          </li>
+          
+        </ng-container>
+        <ng-template #noAlbums>
+
+          <div class="card text-center p-2">
+              <p class="lead text-muted pt-2">You dont have any albums yet</p>
+          </div>
+          
+        </ng-template>
+        
+      </ul>
+
+    </div>
+
+    <div class="tab-pane fade mb-4" id="upload-photo" role="tabpanel" aria-labelledby="nav-upload-photo-tab">
+      <!-- upload photos -->
+      <form [formGroup]="photoUploadForm" (ngSubmit)="uploadPhotos($event)">
+        <div class="form-group mb-4">
+          <label for="album_name_upload">Select Album </label>
+          <select class="form-control" name="album_name_upload" id="album_name_upload">
+
+            <option *ngFor="let album of albums" value="{{ album.album_name }}">{{ album.album_name }}</option>
+
+          </select>
+        </div>
+
+        <div class="container card text-center">
+
+          <div class="upload-box p-5" appDnd (fileDropped)="onFileDropped($event)">
+            <input type="file" #fileDropRef id="fileDropRef" multiple (change)="onFilesSelected($event)" />
+
+            <h2 class="text-muted">1.</h2>
+            <p class="lead">Drag and drop files here <br>
+              or</p>
+            <button class="btn file-upload-btn" for="fileDropRef">Browse for photos</button>
+          </div>
+
+        </div>
+
+
+        <div class="container p-5">
+
+          <h2 class="text-muted">2.</h2>
+          <p class="lead">Upload photos to the album </p>
+          <button class="btn create-album-btn" type="submit">Upload photos</button>
+
+          <div class="files-list">
+            <p class="lead text-center text-muted">The names of photos to upload shows up here after you select them</p>
+
+            <div *ngFor="let file of nameOfFilesToUpload; let i=index">
+
+              <div class="card mb-2">
+                <div class="card-body">
+                  {{ file.fileID }}
+                  <button class="btn file-delete-btn float-right" (click)="deletePhoto(i)">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Modals -->
